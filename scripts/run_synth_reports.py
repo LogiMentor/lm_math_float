@@ -32,11 +32,18 @@ CLOCK_PERIOD_NS = 10.0
 OUTPUT_ROOT = Path("build") / "synth"
 DEFAULT_TOOLS = ("vivado", "quartus", "diamond", "libero")
 
-TOOL_COMMANDS = {
-    "vivado": os.environ.get("LM_SYNTH_VIVADO", "vivado"),
+TOOL_INSTALL_DIRS = {
+    "vivado": os.environ.get("LM_SYNTH_VIVADO_DIR", ""),
+    "quartus": os.environ.get("LM_SYNTH_QUARTUS_DIR", ""),
+    "diamond": os.environ.get("LM_SYNTH_DIAMOND_DIR", ""),
+    "libero": os.environ.get("LM_SYNTH_LIBERO_DIR", ""),
+}
+
+TOOL_EXECUTABLES = {
+    "vivado": os.environ.get("LM_SYNTH_VIVADO_EXE", "vivado"),
     "quartus": os.environ.get("LM_SYNTH_QUARTUS_SH", "quartus_sh"),
     "diamond": os.environ.get("LM_SYNTH_DIAMONDC", "diamondc"),
-    "libero": os.environ.get("LM_SYNTH_LIBERO", "libero"),
+    "libero": os.environ.get("LM_SYNTH_LIBERO_EXE", "libero"),
 }
 
 VIVADO_PART = os.environ.get("LM_SYNTH_VIVADO_PART", "xc7a35tcsg324-1")
@@ -114,6 +121,20 @@ UTIL_PATTERNS = {
     ],
 }
 
+TOOL_SUBDIRS = {
+    "vivado": ("", "bin"),
+    "quartus": ("", "bin", "bin64", "quartus/bin", "quartus/bin64"),
+    "diamond": ("", "bin", "bin/nt", "bin/nt64", "ispfpga/bin/nt", "ispfpga/bin/nt64"),
+    "libero": ("", "bin"),
+}
+
+TOOL_BASENAMES = {
+    "vivado": ("vivado",),
+    "quartus": ("quartus_sh",),
+    "diamond": ("diamondc",),
+    "libero": ("libero",),
+}
+
 
 @dataclass
 class SynthResult:
@@ -154,18 +175,50 @@ def path_is_relative_to(path: Path, parent: Path) -> bool:
     return True
 
 
-def split_tool_command(command: str) -> list[str]:
-    if host_is_windows() and command.lower().endswith(".bat"):
-        return [command]
-    return [command]
+def executable_names(tool: str, executable: str) -> list[str]:
+    roots: list[str] = []
+    if executable:
+        roots.append(Path(executable).name)
+    roots.extend(TOOL_BASENAMES[tool])
+
+    names: list[str] = []
+    for root in roots:
+        root_lower = root.lower()
+        candidates = [root]
+        if host_is_windows() and not root_lower.endswith((".bat", ".exe")):
+            candidates.extend([root + ".bat", root + ".exe"])
+        for name in candidates:
+            if name not in names:
+                names.append(name)
+    return names
 
 
-def find_tool(command: str) -> str | None:
-    parts = split_tool_command(command)
-    exe = parts[0]
-    if Path(exe).is_absolute() and Path(exe).exists():
-        return exe
-    return shutil.which(exe)
+def resolve_tool(tool: str, executable: str, install_dir: str) -> str | None:
+    exe_path = Path(executable)
+    if executable and (exe_path.is_absolute() or exe_path.parent != Path(".")):
+        candidate = abs_path(exe_path)
+        if candidate.exists():
+            return str(candidate)
+
+    if install_dir:
+        root = abs_path(install_dir)
+        for subdir in TOOL_SUBDIRS[tool]:
+            search_dir = root / subdir if subdir else root
+            for name in executable_names(tool, executable):
+                candidate = search_dir / name
+                if candidate.exists():
+                    return str(candidate)
+        return None
+
+    if executable:
+        found = shutil.which(executable)
+        if found:
+            return found
+    for name in executable_names(tool, ""):
+        found = shutil.which(name)
+        if found:
+            return found
+    return None
 
 
 def tcl_path(path: Path | str) -> str:
@@ -315,7 +368,7 @@ SCRIPT_WRITERS = {
 
 
 def command_for(tool: str, command: str, script: Path) -> list[str]:
-    base = split_tool_command(command)
+    base = [command]
     if tool == "vivado":
         return base + ["-mode", "batch", "-source", str(script)]
     if tool == "quartus":
@@ -552,12 +605,13 @@ def write_summary(results: list[SynthResult], output_root: Path, clock_period_ns
     write_file(md_path, "\n".join(lines) + "\n")
 
 
-def list_tools(commands: dict[str, str]) -> None:
+def list_tools(commands: dict[str, str], install_dirs: dict[str, str]) -> None:
     for tool in DEFAULT_TOOLS:
         command = commands[tool]
-        found = find_tool(command)
+        install_dir = install_dirs[tool] or "<PATH>"
+        found = resolve_tool(tool, command, install_dirs[tool])
         status = found if found else "not found"
-        print(f"{tool:8s} {command} -> {status}")
+        print(f"{tool:8s} dir={install_dir} exe={command} -> {status}")
 
 
 def main() -> int:
@@ -585,10 +639,14 @@ def main() -> int:
         default=OUTPUT_ROOT,
         help="Output directory for generated scripts, logs, and summaries.",
     )
-    parser.add_argument("--vivado", default=TOOL_COMMANDS["vivado"], help="Vivado executable")
-    parser.add_argument("--quartus-sh", default=TOOL_COMMANDS["quartus"], help="quartus_sh executable")
-    parser.add_argument("--diamondc", default=TOOL_COMMANDS["diamond"], help="diamondc executable")
-    parser.add_argument("--libero", default=TOOL_COMMANDS["libero"], help="Libero executable")
+    parser.add_argument("--vivado-dir", default=TOOL_INSTALL_DIRS["vivado"], help="Vivado install or bin directory")
+    parser.add_argument("--quartus-dir", default=TOOL_INSTALL_DIRS["quartus"], help="Quartus install or bin directory")
+    parser.add_argument("--diamond-dir", default=TOOL_INSTALL_DIRS["diamond"], help="Diamond install or bin directory")
+    parser.add_argument("--libero-dir", default=TOOL_INSTALL_DIRS["libero"], help="Libero install or bin directory")
+    parser.add_argument("--vivado", default=TOOL_EXECUTABLES["vivado"], help="Vivado executable name or path")
+    parser.add_argument("--quartus-sh", default=TOOL_EXECUTABLES["quartus"], help="quartus_sh executable name or path")
+    parser.add_argument("--diamondc", default=TOOL_EXECUTABLES["diamond"], help="diamondc executable name or path")
+    parser.add_argument("--libero", default=TOOL_EXECUTABLES["libero"], help="Libero executable name or path")
     parser.add_argument(
         "--emit-only",
         action="store_true",
@@ -612,9 +670,15 @@ def main() -> int:
         "diamond": args.diamondc,
         "libero": args.libero,
     }
+    install_dirs = {
+        "vivado": args.vivado_dir,
+        "quartus": args.quartus_dir,
+        "diamond": args.diamond_dir,
+        "libero": args.libero_dir,
+    }
 
     if args.list_tools:
-        list_tools(commands)
+        list_tools(commands, install_dirs)
         return 0
 
     try:
@@ -631,10 +695,13 @@ def main() -> int:
     output_root.mkdir(parents=True, exist_ok=True)
 
     selected_tools = args.tools
+    resolved_commands = {
+        tool: resolve_tool(tool, commands[tool], install_dirs[tool]) for tool in selected_tools
+    }
     if not args.emit_only:
-        selected_tools = [tool for tool in selected_tools if find_tool(commands[tool]) is not None]
+        selected_tools = [tool for tool in selected_tools if resolved_commands[tool] is not None]
         if not selected_tools:
-            print("No requested vendor tool was found. Use --list-tools or --emit-only.", file=sys.stderr)
+            print("No requested vendor tool was found. Set *_DIR in the script or use --emit-only.", file=sys.stderr)
             return 2
 
     results: list[SynthResult] = []
@@ -646,7 +713,7 @@ def main() -> int:
             result = build_one(
                 tool=tool,
                 top=top,
-                command=commands[tool],
+                command=resolved_commands[tool] or commands[tool],
                 output_root=output_root,
                 clock_period_ns=args.clock_period,
                 emit_only=args.emit_only,

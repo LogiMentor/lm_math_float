@@ -56,7 +56,7 @@ def run(cmd: list[str]) -> subprocess.CompletedProcess[str]:
     print(f"+ {printable}", flush=True)
     result = subprocess.run(
         cmd,
-        cwd=ROOT,
+        cwd=BUILD,
         text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,

@@ -151,8 +151,9 @@ python3 scripts/run_synth_reports.py --tools auto
 ```
 
 The script supports Vivado, Quartus, Diamond, and Libero when their command
-line tools are installed on the local machine. It generates one vendor script
-per module and writes:
+line tools are installed on the local machine. The intended setup is to point
+the script at the vendor installation directories, then run the selected
+tools. It generates one vendor script per module and writes:
 
 ```text
 build/synth/synthesis_summary.md
@@ -168,11 +169,24 @@ settings are:
 |---|---|
 | `HOST_PLATFORM` | `auto`, `windows`, or `linux`. |
 | `CLOCK_PERIOD_NS` | Clock constraint used for the generated builds. |
-| `TOOL_COMMANDS` | Local executable names or absolute paths. |
+| `TOOL_INSTALL_DIRS` | Vendor install directory or `bin` directory per tool. |
+| `TOOL_EXECUTABLES` | Executable name or absolute path when the default name is not right. |
 | `VIVADO_PART` | Xilinx part for Vivado runs. |
 | `QUARTUS_FAMILY`, `QUARTUS_DEVICE` | Intel target for Quartus runs. |
 | `DIAMOND_DEVICE`, `DIAMOND_SYNTH` | Lattice target and synthesis engine. |
 | `LIBERO_*` | Microchip family, die, package, and speed grade. |
+
+The directory settings can also be supplied without editing the file:
+
+```sh
+python3 scripts/run_synth_reports.py --vivado-dir /opt/Xilinx/Vivado/2024.2
+python3 scripts/run_synth_reports.py --quartus-dir C:/intelFPGA_lite/23.1std/quartus
+python3 scripts/run_synth_reports.py --diamond-dir C:/lscc/diamond/3.13
+python3 scripts/run_synth_reports.py --libero-dir C:/Microchip/Libero_SoC_v2024.2
+```
+
+Equivalent environment variables are `LM_SYNTH_VIVADO_DIR`,
+`LM_SYNTH_QUARTUS_DIR`, `LM_SYNTH_DIAMOND_DIR`, and `LM_SYNTH_LIBERO_DIR`.
 
 Useful commands:
 
@@ -180,7 +194,7 @@ Useful commands:
 python3 scripts/run_synth_reports.py --emit-only --tools vivado,quartus
 python3 scripts/run_synth_reports.py --module lm_math_fpu_prod
 python3 scripts/run_synth_reports.py --clock-period 5.0
-python3 scripts/run_synth_reports.py --vivado /path/to/vivado
+python3 scripts/run_synth_reports.py --vivado-dir /path/to/Vivado/2024.2
 ```
 
 Fmax is taken from vendor timing reports when present. When only requested

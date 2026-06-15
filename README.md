@@ -111,12 +111,13 @@ python3 scripts/run_synth_reports.py --list-tools
 python3 scripts/run_synth_reports.py --tools auto
 ```
 
-The synthesis runner is intentionally not part of CI. It detects installed
-Vivado, Quartus, Diamond, and Libero executables, generates vendor scripts
-under `build/synth`, and writes `synthesis_summary.md` plus
-`synthesis_summary.csv` with Fmax and utilization data when the vendor reports
-provide those fields. Edit the configuration block at the top of the script
-for local tool paths, operating system, clock period, and target devices.
+The synthesis runner is intentionally not part of CI. It uses configured
+Vivado, Quartus, Diamond, and Libero installation directories or executable
+paths, generates vendor scripts under `build/synth`, and writes
+`synthesis_summary.md` plus `synthesis_summary.csv` with Fmax and utilization
+data when the vendor reports provide those fields. Edit the configuration
+block at the top of the script for local tool directories, operating system,
+clock period, and target devices.
 
 ## Verification Status
 

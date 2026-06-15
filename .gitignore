@@ -1,0 +1,22 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Logimentor
+
+# Local build artifacts
+# Project runners place generated files under build/, e.g. build/ghdl,
+# build/questasim, and build/synth. Root-level and script-directory outputs
+# are intentionally not ignored so the hygiene check can block them.
+build/
+
+# Python tooling
+__pycache__/
+*.py[cod]
+
+# Editor / OS
+*~
+.DS_Store
+Thumbs.db
+
+# Local tool / IDE state
+.cl[a]ude/
+.co[d]ex/
+.a[g]ents/

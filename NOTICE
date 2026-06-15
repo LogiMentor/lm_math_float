@@ -1,0 +1,5 @@
+lm_math_float
+Copyright 2026 Logimentor
+
+This product includes VHDL floating-point arithmetic modules and
+self-checking verification benches maintained by Logimentor.

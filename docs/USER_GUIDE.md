@@ -147,7 +147,7 @@ The GitHub Actions workflow runs two jobs:
 
 | Job | Purpose |
 |---|---|
-| `public-sanity` | Verifies license/header/content/history hygiene. |
+| `repo-hygiene` | Verifies license/header/content/history hygiene. |
 | `ghdl-regression` | Installs GHDL and runs all self-checking benches. |
 
 The CI is intentionally simulator-open-source-first. QuestaSim scripts remain
@@ -169,8 +169,8 @@ Before using a module in production logic:
 
 Before publishing from a local working copy:
 
-1. Run `python3 scripts/check_public_sanity.py`.
-2. Run `python3 scripts/check_public_sanity.py --all-refs` on the public
+1. Run `python3 scripts/check_repo_hygiene.py`.
+2. Run `python3 scripts/check_repo_hygiene.py --all-refs` on the public
    mirror or a clone that only contains refs intended for publication.
 3. Install local hooks with
    `pre-commit install --hook-type pre-commit --hook-type commit-msg --hook-type pre-push`.

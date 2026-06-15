@@ -40,12 +40,12 @@ sim/
 
 scripts/
   run_ghdl_tests.py           GHDL compile-and-run regression
-  check_public_sanity.py      public-release content checks
+  check_repo_hygiene.py       repository hygiene checks
 
 docs/
   USER_GUIDE.md               integration and verification guide
   REGRESSION_COVERAGE.md      module-to-test coverage matrix
-  CODE_REVIEW.md              release review and residual risks
+  VERIFICATION.md             verification scope and known limits
 
 CHANGELOG.md                  public release history
 ```
@@ -114,9 +114,11 @@ modules that expose `rst_n_i`.
 Detailed per-test coverage, tolerances, and known gaps are in
 [`TESTPLAN.md`](TESTPLAN.md). The module-to-test matrix is in
 [`docs/REGRESSION_COVERAGE.md`](docs/REGRESSION_COVERAGE.md). Integration
-details are in [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md).
+details are in [`docs/USER_GUIDE.md`](docs/USER_GUIDE.md). Verification
+scope and known limits are summarized in
+[`docs/VERIFICATION.md`](docs/VERIFICATION.md).
 
-## Public Release Checks
+## Repository Hygiene
 
 Install the optional pre-commit hook with:
 
@@ -127,16 +129,16 @@ pre-commit install --hook-type pre-commit --hook-type commit-msg --hook-type pre
 The hook runs:
 
 ```sh
-python3 scripts/check_public_sanity.py
+python3 scripts/check_repo_hygiene.py
 ```
 
 It checks tracked files for Apache-2.0 headers on source/script files,
 expected license metadata, forbidden local-tool path components, common
 private development-tool markers, the current branch name, and commit
-messages. To run the stricter public-mirror check used by CI:
+messages. To run the stricter all-ref check used by CI:
 
 ```sh
-python3 scripts/check_public_sanity.py --all-refs
+python3 scripts/check_repo_hygiene.py --all-refs
 ```
 
 ## License

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 Logimentor
 
-"""Repository sanity checks for a public source tree."""
+"""Repository hygiene checks for source, metadata, and git refs."""
 
 from __future__ import annotations
 
@@ -155,7 +155,7 @@ def find_forbidden_text(label: str, text: str) -> list[str]:
     errors: list[str] = []
     for pattern in FORBIDDEN_TEXT_PATTERNS:
         for match in pattern.finditer(text):
-            errors.append(f"{label}: forbidden public-release marker '{match.group(0)}'")
+            errors.append(f"{label}: forbidden repository marker '{match.group(0)}'")
     return errors
 
 
@@ -294,12 +294,12 @@ def main() -> int:
         errors.extend(check_git_history(args.all_refs))
 
     if errors:
-        print("Public sanity check failed:", file=sys.stderr)
+        print("Repository hygiene check failed:", file=sys.stderr)
         for error in errors:
             print(f"  - {error}", file=sys.stderr)
         return 1
 
-    print(f"Public sanity check passed ({len(paths)} candidate files checked).")
+    print(f"Repository hygiene check passed ({len(paths)} candidate files checked).")
     return 0
 
 

@@ -9,16 +9,16 @@ default_install_hook_types:
 repos:
   - repo: local
     hooks:
-      - id: public-sanity
-        name: public release safety check
-        entry: python scripts/check_public_sanity.py
+      - id: repo-hygiene
+        name: repository hygiene check
+        entry: python scripts/check_repo_hygiene.py
         language: python
         pass_filenames: false
         stages: [pre-commit, pre-push]
 
-      - id: public-message-sanity
-        name: public commit message safety check
-        entry: python scripts/check_public_sanity.py --message-file
+      - id: repo-message-hygiene
+        name: commit message hygiene check
+        entry: python scripts/check_repo_hygiene.py --message-file
         language: python
         pass_filenames: true
         stages: [commit-msg]

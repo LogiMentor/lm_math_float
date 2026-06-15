@@ -38,7 +38,7 @@ arithmetic library.
 - GitHub Actions CI: public-content sanity checks and the GHDL
   self-checking regression.
 - Documentation: `README.md`, `docs/USER_GUIDE.md`,
-  `docs/REGRESSION_COVERAGE.md`, `docs/CODE_REVIEW.md`, and `TESTPLAN.md`.
+  `docs/REGRESSION_COVERAGE.md`, `docs/VERIFICATION.md`, and `TESTPLAN.md`.
 - Apache-2.0 license with SPDX headers across all source and script files.
 
 [1.0.0]: https://github.com/logimentor/lm_math_float/releases/tag/v1.0.0

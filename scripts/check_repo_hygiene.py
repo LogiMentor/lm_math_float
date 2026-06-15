@@ -49,10 +49,6 @@ FORBIDDEN_TEXT_PATTERNS = [
     text_marker("open", "a", "i"),
     text_marker("chat", "g", "pt"),
     text_marker("co", "pilot"),
-    # Legacy company / library markers (pre-Logimentor lineage).
-    text_marker("ce", "s_"),
-    text_marker("camp", "era"),
-    text_marker("electronic ", "systems"),
 ]
 
 FORBIDDEN_PATH_PARTS = {

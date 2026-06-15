@@ -164,3 +164,8 @@ python3 scripts/check_repo_hygiene.py --all-refs
 ## License
 
 Apache License 2.0. See [`LICENSE`](LICENSE) and [`NOTICE`](NOTICE).
+
+## Support and Services
+
+For customization, integration support, verification extensions, or related
+FPGA design services, visit [LogiMentor](https://www.logimentor.com).

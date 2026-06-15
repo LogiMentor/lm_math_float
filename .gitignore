@@ -9,13 +9,10 @@ sim/questasim/*.log
 sim/questasim/modelsim.ini
 sim/questasim/vsim.wlf
 
-# GHDL build artifacts
+# Local build artifacts
+# Project runners place generated files under build/, e.g. build/ghdl and
+# build/synth. Root-level simulator outputs are intentionally not ignored.
 build/
-*.cf
-*.ghw
-*.vcd
-e~*.o
-tb_lm_math_*.exe
 
 # Python tooling
 __pycache__/

@@ -118,6 +118,10 @@ python3 scripts/run_ghdl_tests.py --keep-build
 The testbenches finish with a passive `wait`, so the runner uses a stop time
 and checks the pass marker in the simulator output.
 
+All GHDL work files, elaboration outputs, and temporary executables are kept
+under `build/ghdl`, which is ignored by git. The repository root should remain
+free of generated simulator files after a normal regression run.
+
 The regression matrix covers every public source module directly. See
 [`REGRESSION_COVERAGE.md`](REGRESSION_COVERAGE.md) for the module-to-test
 mapping and the non-exhaustive edge cases that remain outside the pass suite.

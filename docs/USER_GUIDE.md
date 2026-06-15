@@ -141,6 +141,54 @@ vsim -c -do "do run_tb_lm_math_fpu_sum.do; quit -f"
 Each `run_tb_*.do` script sources `compile_lib.do`, compiles the matching
 testbench, runs to completion, and relies on the self-checking assertions.
 
+## Local FPGA Synthesis Reports
+
+The repository includes a local synthesis/timing runner for workstation use:
+
+```sh
+python3 scripts/run_synth_reports.py --list-tools
+python3 scripts/run_synth_reports.py --tools auto
+```
+
+The script supports Vivado, Quartus, Diamond, and Libero when their command
+line tools are installed on the local machine. It generates one vendor script
+per module and writes:
+
+```text
+build/synth/synthesis_summary.md
+build/synth/synthesis_summary.csv
+build/synth/<tool>/<module>/
+```
+
+Edit the configuration block at the top of
+`scripts/run_synth_reports.py` before collecting release numbers. The key
+settings are:
+
+| Setting | Purpose |
+|---|---|
+| `HOST_PLATFORM` | `auto`, `windows`, or `linux`. |
+| `CLOCK_PERIOD_NS` | Clock constraint used for the generated builds. |
+| `TOOL_COMMANDS` | Local executable names or absolute paths. |
+| `VIVADO_PART` | Xilinx part for Vivado runs. |
+| `QUARTUS_FAMILY`, `QUARTUS_DEVICE` | Intel target for Quartus runs. |
+| `DIAMOND_DEVICE`, `DIAMOND_SYNTH` | Lattice target and synthesis engine. |
+| `LIBERO_*` | Microchip family, die, package, and speed grade. |
+
+Useful commands:
+
+```sh
+python3 scripts/run_synth_reports.py --emit-only --tools vivado,quartus
+python3 scripts/run_synth_reports.py --module lm_math_fpu_prod
+python3 scripts/run_synth_reports.py --clock-period 5.0
+python3 scripts/run_synth_reports.py --vivado /path/to/vivado
+```
+
+Fmax is taken from vendor timing reports when present. When only requested
+clock period and slack are available, the script reports an approximate Fmax
+derived from those values. Utilization parsing is best effort because report
+formats differ across tool versions; keep the raw reports under
+`build/synth/<tool>/<module>/` with any published result.
+
 ## CI
 
 The GitHub Actions workflow runs two jobs:

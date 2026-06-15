@@ -40,6 +40,7 @@ sim/
 
 scripts/
   run_ghdl_tests.py           GHDL compile-and-run regression
+  run_synth_reports.py        local FPGA synthesis/timing summaries
   check_repo_hygiene.py       repository hygiene checks
 
 docs/
@@ -102,6 +103,20 @@ vsim -c -do "do run_all.do; quit -f"
 The GHDL script and GitHub Actions workflow both require every testbench to
 emit `TEST PASSED`. A VHDL `severity failure`, a missing pass marker, or a
 reported `TEST FAILED` marks the run as failed.
+
+For local FPGA synthesis and timing summaries:
+
+```sh
+python3 scripts/run_synth_reports.py --list-tools
+python3 scripts/run_synth_reports.py --tools auto
+```
+
+The synthesis runner is intentionally not part of CI. It detects installed
+Vivado, Quartus, Diamond, and Libero executables, generates vendor scripts
+under `build/synth`, and writes `synthesis_summary.md` plus
+`synthesis_summary.csv` with Fmax and utilization data when the vendor reports
+provide those fields. Edit the configuration block at the top of the script
+for local tool paths, operating system, clock period, and target devices.
 
 ## Verification Status
 

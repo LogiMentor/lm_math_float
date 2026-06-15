@@ -44,6 +44,16 @@ cd sim/questasim
 vsim -c -do "do run_all.do; quit -f"
 ```
 
+Local FPGA synthesis and timing summaries can be collected with:
+
+```sh
+python3 scripts/run_synth_reports.py --tools auto
+```
+
+This runner is not part of CI because FPGA vendor tools, target devices, and
+licenses are workstation-specific. It writes raw reports plus summary tables
+under `build/synth`.
+
 ## Continuous Checks
 
 The CI workflow runs two jobs:

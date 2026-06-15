@@ -144,6 +144,8 @@ vsim -c -do "do run_tb_lm_math_fpu_sum.do; quit -f"
 
 Each `run_tb_*.do` script sources `compile_lib.do`, compiles the matching
 testbench, runs to completion, and relies on the self-checking assertions.
+The scripts keep `work`, `lm_math_float_lib`, `modelsim.ini`, waveform files,
+and transcripts under `build/questasim`.
 
 ## Local FPGA Synthesis Reports
 
@@ -207,14 +209,18 @@ derived from those values. Utilization parsing is best effort because report
 formats differ across tool versions; keep the raw reports under
 `build/synth/<tool>/<module>/` with any published result.
 
+Generated outputs are allowed only under `build/`. The repository hygiene
+check fails on known simulator, synthesis, implementation, log, waveform, and
+object files found in the repository root or normal source/script/doc trees.
+
 ## CI
 
 The GitHub Actions workflow runs two jobs:
 
 | Job | Purpose |
 |---|---|
-| `repo-hygiene` | Verifies license/header/content/history hygiene. |
-| `ghdl-regression` | Installs GHDL and runs all self-checking benches. |
+| `repo-hygiene` | Verifies license/header/content/history/output hygiene. |
+| `ghdl-regression` | Installs GHDL, runs all self-checking benches, then checks that generated files stayed under `build/`. |
 
 The CI is intentionally simulator-open-source-first. QuestaSim scripts remain
 available for local or licensed runs.

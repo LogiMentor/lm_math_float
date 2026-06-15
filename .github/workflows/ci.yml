@@ -34,3 +34,6 @@ jobs:
 
       - name: Run regression
         run: python3 scripts/run_ghdl_tests.py
+
+      - name: Check generated output locations
+        run: python3 scripts/check_repo_hygiene.py --no-history

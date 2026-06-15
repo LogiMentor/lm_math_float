@@ -37,7 +37,7 @@ foreach tb $TB_LIST {
     puts "==================================================================="
     puts "== Running $tb"
     puts "==================================================================="
-    vcom -2008 -work work ../$tb.vhd
+    vcom -2008 -work work [file join $SIM_TB_DIR $tb.vhd]
     vsim -t ps -voptargs="+acc" work.$tb
     run -all
     quit -sim

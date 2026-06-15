@@ -76,6 +76,60 @@ SKIP_SUFFIXES = {
 VHDL_SUFFIXES = {".vhd", ".vhdl"}
 SCRIPT_SUFFIXES = {".py", ".do", ".yml", ".yaml"}
 
+OUTPUT_DIR_NAMES = {
+    "__pycache__",
+    ".xil",
+    "incremental_db",
+    "lm_math_float_lib",
+    "output_files",
+    "work",
+    "xsim.dir",
+}
+
+OUTPUT_FILE_NAMES = {
+    "modelsim.ini",
+    "transcript",
+    "vivado.jou",
+    "vivado.log",
+    "vsim.wlf",
+}
+
+OUTPUT_SUFFIXES = {
+    ".cf",
+    ".dcp",
+    ".dll",
+    ".dylib",
+    ".edf",
+    ".edif",
+    ".exe",
+    ".ghw",
+    ".jou",
+    ".log",
+    ".mrp",
+    ".o",
+    ".obj",
+    ".pyc",
+    ".pyo",
+    ".qdb",
+    ".qpf",
+    ".qsf",
+    ".rpt",
+    ".so",
+    ".srr",
+    ".str",
+    ".summary",
+    ".twr",
+    ".vcd",
+    ".wlf",
+}
+
+SCAN_SKIP_DIRS = {
+    ".git",
+    ".venv",
+    "build",
+    "venv",
+}
+
 
 def run_git_ls_files() -> list[Path]:
     result = run_git(
@@ -111,6 +165,39 @@ def display_path(path: Path) -> str:
         return rel(path)
     except ValueError:
         return str(path)
+
+
+def walk_workspace_entries() -> list[Path]:
+    entries: list[Path] = []
+    stack = [ROOT]
+    while stack:
+        current = stack.pop()
+        try:
+            children = list(current.iterdir())
+        except OSError:
+            continue
+        for child in children:
+            if child.is_dir():
+                if child.name in SCAN_SKIP_DIRS:
+                    continue
+                entries.append(child)
+                stack.append(child)
+            else:
+                entries.append(child)
+    return entries
+
+
+def check_generated_outputs() -> list[str]:
+    errors: list[str] = []
+    for path in walk_workspace_entries():
+        name = path.name.lower()
+        if path.is_dir():
+            if name in OUTPUT_DIR_NAMES:
+                errors.append(f"{rel(path)}/: generated output directory outside build/")
+            continue
+        if name in OUTPUT_FILE_NAMES or path.suffix.lower() in OUTPUT_SUFFIXES:
+            errors.append(f"{rel(path)}: generated output file outside build/")
+    return errors
 
 
 def should_skip(path: Path) -> bool:
@@ -281,6 +368,7 @@ def main() -> int:
 
     errors: list[str] = []
     errors.extend(check_license_file())
+    errors.extend(check_generated_outputs())
     errors.extend(check_forbidden_paths(paths))
     errors.extend(check_forbidden_terms(paths))
     errors.extend(check_message_files(message_files))

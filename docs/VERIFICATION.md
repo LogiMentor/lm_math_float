@@ -54,13 +54,19 @@ This runner is not part of CI because FPGA vendor tools, target devices, and
 licenses are workstation-specific. It writes raw reports plus summary tables
 under `build/synth`.
 
+All generated simulator and implementation outputs are expected under
+`build/`. The hygiene check fails when known output files or tool work
+directories appear elsewhere in the repository.
+
 ## Continuous Checks
 
 The CI workflow runs two jobs:
 
 - repository hygiene checks for license metadata, SPDX headers, forbidden
-  local path markers, branch names, and commit messages;
-- the full GHDL self-checking regression.
+  local path markers, generated output placement, branch names, and commit
+  messages;
+- the full GHDL self-checking regression, followed by the same output
+  placement check on the post-regression workspace.
 
 The same hygiene script is available locally:
 

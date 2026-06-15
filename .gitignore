@@ -1,17 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright 2026 Logimentor
 
-# QuestaSim / ModelSim build artifacts
-sim/questasim/work/
-sim/questasim/lm_math_float_lib/
-sim/questasim/transcript
-sim/questasim/*.log
-sim/questasim/modelsim.ini
-sim/questasim/vsim.wlf
-
 # Local build artifacts
-# Project runners place generated files under build/, e.g. build/ghdl and
-# build/synth. Root-level simulator outputs are intentionally not ignored.
+# Project runners place generated files under build/, e.g. build/ghdl,
+# build/questasim, and build/synth. Root-level and script-directory outputs
+# are intentionally not ignored so the hygiene check can block them.
 build/
 
 # Python tooling

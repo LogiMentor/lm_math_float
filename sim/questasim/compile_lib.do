@@ -6,15 +6,22 @@
 # Sources : ../../src/*.vhd
 # =============================================================================
 
+set SCRIPT_DIR [file normalize [file dirname [info script]]]
+set REPO_ROOT  [file normalize [file join $SCRIPT_DIR ../..]]
+set SRC        [file join $REPO_ROOT src]
+set SIM_TB_DIR [file join $REPO_ROOT sim]
+set BUILD_DIR  [file join $REPO_ROOT build questasim]
+
+file mkdir $BUILD_DIR
+cd $BUILD_DIR
+
 # wipe previous compilation if present
 if {[file exists lm_math_float_lib]} { vdel -all -lib lm_math_float_lib }
-if {[file exists work]}               { vdel -all -lib work }
+if {[file exists work]}              { vdel -all -lib work }
 
 vlib lm_math_float_lib
 vmap lm_math_float_lib lm_math_float_lib
 vlib work
-
-set SRC ../../src
 
 # 1) support package -- no dependencies
 vcom -2008 -work lm_math_float_lib $SRC/lm_math_float_pkg.vhd

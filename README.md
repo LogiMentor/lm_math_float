@@ -119,6 +119,10 @@ data when the vendor reports provide those fields. Edit the configuration
 block at the top of the script for local tool directories, operating system,
 clock period, and target devices.
 
+All local generated outputs are expected under `build/`. The repository
+hygiene check fails if known simulator or FPGA tool outputs appear in the
+repository root or under source/script/documentation directories.
+
 ## Verification Status
 
 The suite contains 15 self-checking testbenches with 693 documented checks.
@@ -150,8 +154,8 @@ python3 scripts/check_repo_hygiene.py
 
 It checks tracked files for Apache-2.0 headers on source/script files,
 expected license metadata, forbidden local-tool path components, common
-private development-tool markers, the current branch name, and commit
-messages. To run the stricter all-ref check used by CI:
+private development-tool markers, generated output placement, the current
+branch name, and commit messages. To run the stricter all-ref check used by CI:
 
 ```sh
 python3 scripts/check_repo_hygiene.py --all-refs

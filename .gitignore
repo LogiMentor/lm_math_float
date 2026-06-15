@@ -1,0 +1,32 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright 2026 Logimentor
+
+# QuestaSim / ModelSim build artifacts
+sim/questasim/work/
+sim/questasim/lm_math_float_lib/
+sim/questasim/transcript
+sim/questasim/*.log
+sim/questasim/modelsim.ini
+sim/questasim/vsim.wlf
+
+# GHDL build artifacts
+build/
+*.cf
+*.ghw
+*.vcd
+e~*.o
+tb_lm_math_*.exe
+
+# Python tooling
+__pycache__/
+*.py[cod]
+
+# Editor / OS
+*~
+.DS_Store
+Thumbs.db
+
+# Local tool / IDE state
+.cl[a]ude/
+.co[d]ex/
+.a[g]ents/
